@@ -400,22 +400,17 @@ end)
         local function GetTarget()
             return TargetPlayer
         end
+        
         Mouse.KeyDown:Connect(function(Key)
             local key = Key:lower()
-        
-            -- Prevent targeting if the local player's health is below 1
-            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-                local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                if humanoid.Health < 1 then
-                    return  -- Don't do anything if you're knocked
-                end
-            end
+            
             
             if key == shared.Global.ToggleKey:lower() then
                 if shared.Global.PointAssist.IsPrecisionActive then
                     if IsTargeting then
                         if TargetPlayer and TargetPlayer.Character and TargetPlayer.Character:FindFirstChildOfClass("Humanoid").Health >= 1 then
                             if ClosestPlrFromMouse() == TargetPlayer then
+                                
                             else
                                 local newTarget = ClosestPlrFromMouse()
                                 if newTarget and newTarget.Character and newTarget.Character:FindFirstChildOfClass("Humanoid").Health >= 1 then
@@ -432,12 +427,14 @@ end)
                     end
                 end
             end
-        
+            
+            
             if key == shared.Global.CancelKey:lower() then
                 IsTargeting = false
                 TargetPlayer = nil
             end
         end)
+        
         
         local function IsAlignedWithCamera(targetPlayer)
             if targetPlayer and targetPlayer.Character then
@@ -458,21 +455,10 @@ end)
         
         RunService.RenderStepped:Connect(function()
             if IsTargeting and TargetPlayer and TargetPlayer.Character then
-                -- Automatically untarget if the target player's health is below 1 (they're knocked)
                 if TargetPlayer.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
                     TargetPlayer = nil
                     IsTargeting = false 
                     return
-                end
-        
-                -- Automatically untarget if the local player's health is below 1 (you’re knocked)
-                if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-                    local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    if humanoid.Health < 1 then
-                        IsTargeting = false
-                        TargetPlayer = nil
-                        return
-                    end
                 end
         
                 local head = TargetPlayer.Character:FindFirstChild("Head")
@@ -524,15 +510,8 @@ end)
                         end
         
                         if predictedPosition then
-                            -- Check if manual camera movement is happening
-                            local cameraAngle = Camera.CFrame:ToEulerAnglesYXZ()
-                            local isCameraMoving = math.abs(cameraAngle) > 0.1  -- Threshold for manual camera movement
-        
-                            if not isCameraMoving then
-                                -- Lock camera if not manually moved
-                                local DesiredCFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
-                                Camera.CFrame = Camera.CFrame:Lerp(DesiredCFrame, shared.Global.PointAssist.AssistStabilization)
-                            end
+                            local DesiredCFrame = CFrame.new(Camera.CFrame.Position, predictedPosition)
+                            Camera.CFrame = Camera.CFrame:Lerp(DesiredCFrame, shared.Global.PointAssist.AssistStabilization)
                         end
         
                         if shared.Global['Silent Targeting'].IsAssistActive and IsTargeting and TargetPlayer.Character:FindFirstChild("Humanoid") then
@@ -554,8 +533,6 @@ end)
                 end
             end
         end)
-        
-        
         
         
         
@@ -1271,15 +1248,6 @@ else
     
     handleSettingsOpened()
 end
-
-          
-
-
-
-
-
-
-
 
 
 
